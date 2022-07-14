@@ -1,5 +1,5 @@
 import { Analytics } from './analytics'
-import { SegmentEvent, Options } from './events'
+import { Properties, Options } from './events'
 import { pTimeout } from './callback'
 
 declare global {
@@ -46,7 +46,7 @@ export function link(
   this: Analytics,
   links: Element | Array<Element> | JQueryShim | null,
   event: string | Function,
-  properties?: SegmentEvent['properties'] | Function,
+  properties?: Properties | Function,
   options?: Options
 ): Analytics {
   let elements: Array<Element> = []
@@ -110,7 +110,7 @@ export function form(
   this: Analytics,
   forms: HTMLFormElement | Array<HTMLFormElement> | null,
   event: string | Function,
-  properties?: SegmentEvent['properties'] | Function,
+  properties?: Properties | Function,
   options?: Options
 ): Analytics {
   // always arrays, handles jquery

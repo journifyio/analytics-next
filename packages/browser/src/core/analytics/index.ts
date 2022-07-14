@@ -10,11 +10,18 @@ import {
   UserParams,
 } from '../arguments-resolver'
 import type { FormArgs, LinkArgs } from '../auto-track'
-import { Callback, invokeCallback } from '../callback'
+import { invokeCallback } from '../callback'
 import { isOffline } from '../connection'
 import { Context } from '../context'
 import { Emitter } from '@segment/analytics-core'
-import { EventFactory, Integrations, Plan, SegmentEvent } from '../events'
+import {
+  Callback,
+  EventFactory,
+  Integrations,
+  Plan,
+  Properties,
+  SegmentEvent,
+} from '../events'
 import { Plugin } from '../plugin'
 import { EventQueue } from '../queue/event-queue'
 import { CookieOptions, Group, ID, User, UserOptions } from '../user'
@@ -30,6 +37,7 @@ import { version } from '../../generated/version'
 import { PriorityQueue } from '../../lib/priority-queue'
 import { getGlobal } from '../../lib/get-global'
 import { inspectorHost } from '../inspector'
+import { AnalyticsClassic, AnalyticsCore } from './interfaces'
 
 const deprecationWarning =
   'This is being deprecated and will be not be available in future releases of Analytics JS'
@@ -69,7 +77,10 @@ export interface InitOptions {
   obfuscate?: boolean
 }
 
-export class Analytics extends Emitter {
+export class Analytics
+  extends Emitter
+  implements AnalyticsCore, AnalyticsClassic
+{
   protected settings: AnalyticsSettings
   private _user: User
   private _group: Group
@@ -134,7 +145,7 @@ export class Analytics extends Emitter {
 
     const segmentEvent = this.eventFactory.track(
       name,
-      data as SegmentEvent['properties'],
+      data as Properties,
       opts,
       this.integrations
     )
@@ -512,58 +523,20 @@ export class Analytics extends Emitter {
     return integrations
   }
 
-  // analytics-classic stubs
-
-  log() {
+  /* analytics-classic stubs */
+  stub(this: never) {
     console.warn(deprecationWarning)
-    return
   }
-
-  addIntegrationMiddleware() {
-    console.warn(deprecationWarning)
-    return
-  }
-
-  listeners() {
-    console.warn(deprecationWarning)
-    return
-  }
-
-  addEventListener() {
-    console.warn(deprecationWarning)
-    return
-  }
-
-  removeAllListeners() {
-    console.warn(deprecationWarning)
-    return
-  }
-
-  removeListener() {
-    console.warn(deprecationWarning)
-    return
-  }
-
-  removeEventListener() {
-    console.warn(deprecationWarning)
-    return
-  }
-
-  hasListeners() {
-    console.warn(deprecationWarning)
-    return
-  }
-
-  // This function is only used to add GA and Appcue, but these are already being added to Integrations by AJSN
-  addIntegration() {
-    console.warn(deprecationWarning)
-    return
-  }
-
-  add() {
-    console.warn(deprecationWarning)
-    return
-  }
+  log = this.stub
+  addIntegrationMiddleware = this.stub
+  listeners = this.stub
+  addEventListener = this.stub
+  removeAllListeners = this.stub
+  removeListener = this.stub
+  removeEventListener = this.stub
+  hasListeners = this.stub
+  add = this.stub
+  addIntegration = this.stub
 
   // snippet function
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

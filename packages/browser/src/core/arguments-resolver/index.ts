@@ -5,17 +5,22 @@ import {
   isNumber,
 } from '../../plugins/validation'
 import { Context } from '../context'
-import { Options, SegmentEvent } from '../events'
+import {
+  Callback,
+  JSONObject,
+  Options,
+  Properties,
+  SegmentEvent,
+  Traits,
+} from '../events'
 import { ID, User } from '../user'
-
-export type Callback = (ctx: Context | undefined) => Promise<unknown> | unknown
 
 export function resolveArguments(
   eventName: string | SegmentEvent,
-  properties?: object | Callback,
+  properties?: Properties | Callback,
   options?: Options | Callback,
   callback?: Callback
-): [string, object, Options, Callback | undefined] {
+): [string, Properties | Callback, Options, Callback | undefined] {
   const args = [eventName, properties, options, callback]
 
   const name = isPlainObject(eventName) ? eventName.event : eventName
@@ -45,10 +50,10 @@ export function resolveArguments(
 export function resolvePageArguments(
   category?: string | object,
   name?: string | object | Callback,
-  properties?: object | Options | Callback | null,
+  properties?: Properties | Options | Callback | null,
   options?: Options | Callback,
   callback?: Callback
-): [string | null, string | null, object, Options, Callback | undefined] {
+): [string | null, string | null, Properties, Options, Callback | undefined] {
   let resolvedCategory: string | undefined | null = null
   let resolvedName: string | undefined | null = null
   const args = [category, name, properties, options, callback]
@@ -71,10 +76,10 @@ export function resolvePageArguments(
       return isPlainObject(obj)
     }
     return isPlainObject(obj) || obj === null
-  }) as Array<object | null>
+  }) as Array<JSONObject | null>
 
-  const resolvedProperties = objects[0] ?? {}
-  const resolvedOptions = objects[1] ?? {}
+  const resolvedProperties = (objects[0] ?? {}) as Properties
+  const resolvedOptions = (objects[1] ?? {}) as Options
 
   return [
     resolvedCategory,
@@ -95,7 +100,7 @@ export const resolveUserArguments = (user: User): ResolveUser => {
         return isPlainObject(obj)
       }
       return isPlainObject(obj) || obj === null
-    }) as Array<object | null>
+    }) as Array<Traits | null>
 
     const data = objects[0] ?? {}
     const opts = objects[1] ?? {}
@@ -125,10 +130,10 @@ export function resolveAliasArguments(
 
 type ResolveUser = (
   id?: ID | object,
-  traits?: object | Callback | null,
+  traits?: Traits | Callback | null,
   options?: Options | Callback,
   callback?: Callback
-) => [ID, object, Options, Callback | undefined]
+) => [ID, Traits, Options, Callback | undefined]
 
 export type UserParams = Parameters<ResolveUser>
 export type EventParams = Parameters<typeof resolveArguments>
